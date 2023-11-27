@@ -1,10 +1,8 @@
 import Head from 'next/head';
 import Link from 'next/link';
-import { Inter } from 'next/font/google'
 import prisma from '@/lib/prismadb'
 import { useRouter } from 'next/router';
-
-const inter = Inter({ subsets: ['latin'] })
+// import styles from "@/styles/Home.module.css"
 
 export async function getServerSideProps() {
   const users = await prisma.user.findMany();
@@ -25,7 +23,7 @@ export default function Home({ users }) {
   }
   const handleDelete = async (id) => {
     try {
-      await fetch(`/api/deleteUser/${id}`, {
+      await fetch(`/api/user/${id}`, {
         method: "DELETE",
         headers: { 'Content-type': 'application/json' },
       }).then(() => {
@@ -55,6 +53,8 @@ export default function Home({ users }) {
       <ul>
         {users.map(user => <li key={user.id}>{user.name} <button onClick={() => handleDelete(user.id)}>Delete</button></li>)}
       </ul>
+      {/* 
+      <button className='modal' style={styles}>Modal</button> */}
     </>
   )
 }

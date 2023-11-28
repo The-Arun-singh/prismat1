@@ -2,7 +2,7 @@ import Head from 'next/head';
 import Link from 'next/link';
 import prisma from '@/lib/prismadb'
 import { useRouter } from 'next/router';
-// import styles from "@/styles/Home.module.css"
+import { useState } from 'react';
 
 export async function getServerSideProps() {
   const users = await prisma.user.findMany();
@@ -16,20 +16,25 @@ export async function getServerSideProps() {
 
 
 export default function Home({ users }) {
+  const [loggedIn, setLoggedIn] = useState(false);
   const router = useRouter()
 
   const refreshData = () => {
     router.replace(router.asPath)
   }
+
+  const handleClick = (id) => {
+    router.push(`./admin/user/${id}`);
+  }
+
   const handleDelete = async (id) => {
     try {
-      await fetch(`/api/user/${id}`, {
+      await fetch(`/api/admin/user/${id}`, {
         method: "DELETE",
         headers: { 'Content-type': 'application/json' },
       }).then(() => {
         refreshData();
       })
-      // router.push('/')
     } catch (error) {
       console.error(error);
     }
@@ -44,17 +49,28 @@ export default function Home({ users }) {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <h1>This is a test app for prisma-Nextjs Integration.</h1>
-      <button>
-        <Link href={'./createUser'}>Create User</Link>
-      </button>
 
-      <h2>Users</h2>
-      <ul>
-        {users.map(user => <li key={user.id}>{user.name} <button onClick={() => handleDelete(user.id)}>Delete</button></li>)}
-      </ul>
-      {/* 
-      <button className='modal' style={styles}>Modal</button> */}
+
+      {loggedIn ? (
+        <>
+          <h1>This is a test app for prisma-Nextjs Integration.</h1>
+          <button>
+            <Link href={'./admin/createUser'}>Create User</Link>
+          </button>
+
+          <h2>Users</h2>
+          <ul>
+            {users.map(user => <li key={user.id}>
+              {user.name}
+              <button onClick={() => handleDelete(user.id)}>Delete</button>
+              <button onClick={() => handleClick(user.id)}>Edit</button>
+            </li>)}
+          </ul></>
+      ) : (
+        <>
+          <button><Link href={'./login'}>Login</Link></button>
+        </>
+      )}
     </>
   )
 }

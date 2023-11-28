@@ -4,13 +4,14 @@ import { useRouter } from "next/router";
 
 const User = () => {
     const [name, setName] = useState("");
+    const [password, setPassword] = useState('');
     const router = useRouter();
 
     const submitData = async (e) => {
         e.preventDefault();
         try {
-            const body = { name }
-            await fetch(`/api/createUser`, {
+            const body = { name, password }
+            await fetch(`/api/admin/createUser`, {
                 method: "POST",
                 headers: { 'Content-type': 'application/json' },
                 body: JSON.stringify(body),
@@ -33,6 +34,13 @@ const User = () => {
                         placeholder="Name"
                         type="text"
                         value={name}
+                    />
+                    <input
+                        autoFocus
+                        onChange={(e) => setPassword(e.target.value)}
+                        placeholder="password"
+                        type="text"
+                        value={password}
                     />
                     <input
                         disabled={!name}
